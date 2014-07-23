@@ -11,7 +11,9 @@ val commonSettings = Seq(
     "-Xfatal-warnings"))
 
 val dependencies = Seq(
-  libraryDependencies += "org.mongodb" %% "casbah" % "2.6.3")
+  libraryDependencies ++= Seq(
+    "org.mongodb" %% "casbah" % "2.6.3",
+    "com.novus" %% "salat" % "1.9.8"))
 
 lazy val athenaCore = project.in(file("athena-core"))
   .settings(commonSettings: _*)

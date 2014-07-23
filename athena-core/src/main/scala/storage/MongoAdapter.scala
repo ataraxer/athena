@@ -3,6 +3,8 @@ package storage
 
 import com.ataraxer.athena.data.{Note, Tag}
 import com.mongodb.casbah.Imports._
+import com.novus.salat._
+import com.novus.salat.global._
 
 
 trait MongoAdapter extends AthenaDatabaseComponent {
@@ -12,17 +14,12 @@ trait MongoAdapter extends AthenaDatabaseComponent {
     private val notes = db("notes")
 
     def saveNote(note: Note) = {
-      val builder = MongoDBObject.newBuilder
-      builder += "id"   -> note.id.toString
-      builder += "name" -> note.name
-      builder += "body" -> note.body
-      builder += "tags" -> note.tags.map(_.toString)
-      notes.insert(builder.result)
+      notes.insert(grater[Note].asDBObject(note))
     }
 
     def getNote(id: String) = {
       val filter = MongoDBObject("id" -> id)
-      notes.find(filter).toList.map(_.toString)
+      notes.find(filter).toList.map(grater[Note].asObject(_))
     }
   }
 }
