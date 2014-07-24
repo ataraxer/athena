@@ -13,6 +13,8 @@ trait MongoAdapter extends AthenaDatabaseComponent {
     private val db = mongoClient("athena")
     private val notes = db("notes")
 
+    notes.ensureIndex(MongoDBObject("body" -> "text"))
+
     def saveNote(note: Note) = {
       notes.insert(grater[Note].asDBObject(note))
     }
@@ -20,6 +22,10 @@ trait MongoAdapter extends AthenaDatabaseComponent {
     def getNote(id: String) = {
       val filter = MongoDBObject("id" -> id)
       notes.find(filter).toList.map(grater[Note].asObject(_))
+    }
+
+    def findNote(text: String) = {
+      notes.find($text(text)).toList.map(grater[Note].asObject(_))
     }
   }
 }

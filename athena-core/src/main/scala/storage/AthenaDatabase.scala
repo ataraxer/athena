@@ -10,6 +10,7 @@ trait AthenaDatabaseComponent {
   trait AthenaDatabase {
     def saveNote(note: Note): Unit
     def getNote(name: String): List[Note]
+    def findNote(text: String): List[Note]
   }
 }
 
