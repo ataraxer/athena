@@ -31,10 +31,21 @@ class AthenaServer extends SimpleRoutingApp with MongoAdapter {
         }
       }
     } ~
+    path("get") {
+      get {
+        parameters('name) { name =>
+          complete {
+            db.getNote(name).toString
+          }
+        }
+      }
+    } ~
     path("find") {
       get {
         parameters('text) { text =>
-          complete { "OK" }
+          complete {
+            db.findNote(text).toString
+          }
         }
       }
     }
