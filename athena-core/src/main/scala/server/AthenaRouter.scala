@@ -5,12 +5,25 @@ import storage._
 import data._
 
 import akka.actor.ActorSystem
+
 import spray.routing.SimpleRoutingApp
+import spray.httpx.Json4sSupport
+
+import org.json4s.NoTypeHints
+import org.json4s.native.{Serialization => Json}
+
+
 import java.util.UUID
 
 
-trait AthenaRouter extends SimpleRoutingApp {
+trait AthenaRouter
+  extends SimpleRoutingApp
+  with Json4sSupport
+{
   this: AthenaDatabaseComponent =>
+
+  implicit val json4sFormats = Json.formats(NoTypeHints)
+
 
   val notePath = {
     path("add") {
@@ -19,12 +32,19 @@ trait AthenaRouter extends SimpleRoutingApp {
           parameters('name, 'tags) { (name, tags) =>
             complete {
               val id = UUID.randomUUID
+
               val tagsList = tags.split(',').toList map {
                 name => Tag(name, Nil)
               }
+
               val note = Note(id, name, body, tagsList)
               db.saveNote(note)
-              "OK"
+
+              ("note" ->
+                ("name" -> name) ~
+                ("id" -> id) ~
+                ("tags" -> tagsList) ~
+                ("text" -> body))
             }
           }
         }
@@ -34,7 +54,13 @@ trait AthenaRouter extends SimpleRoutingApp {
       get {
         parameters('name) { name =>
           complete {
-            db.getNote(name).toString
+            db.getNote(name) map { note =>
+              ("note" ->
+                ("name" -> note.name) ~
+                ("id" -> note.id) ~
+                ("tags" -> note.tags) ~
+                ("text" -> note.body))
+            }
           }
         }
       }
@@ -43,7 +69,13 @@ trait AthenaRouter extends SimpleRoutingApp {
       get {
         parameters('text) { text =>
           complete {
-            db.findNote(text).toString
+            db.findNote(text) map { note =>
+              ("note" ->
+                ("name" -> note.name) ~
+                ("id" -> note.id) ~
+                ("tags" -> note.tags) ~
+                ("text" -> note.body))
+            }
           }
         }
       }
