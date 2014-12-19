@@ -39,12 +39,7 @@ trait AthenaRouter
 
               val note = Note(id, name, body, tagsList)
               db.saveNote(note)
-
-              ("note" ->
-                ("name" -> name) ~
-                ("id" -> id) ~
-                ("tags" -> tagsList) ~
-                ("text" -> body))
+              note.toJson
             }
           }
         }
@@ -54,13 +49,7 @@ trait AthenaRouter
       get {
         parameters('name) { name =>
           complete {
-            db.getNote(name) map { note =>
-              ("note" ->
-                ("name" -> note.name) ~
-                ("id" -> note.id) ~
-                ("tags" -> note.tags) ~
-                ("text" -> note.body))
-            }
+            db.getNote(name).map( _.toJson )
           }
         }
       }
@@ -69,13 +58,7 @@ trait AthenaRouter
       get {
         parameters('text) { text =>
           complete {
-            db.findNote(text) map { note =>
-              ("note" ->
-                ("name" -> note.name) ~
-                ("id" -> note.id) ~
-                ("tags" -> note.tags) ~
-                ("text" -> note.body))
-            }
+            db.findNote(text).map( _.toJson )
           }
         }
       }
