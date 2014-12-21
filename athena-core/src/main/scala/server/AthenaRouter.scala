@@ -16,11 +16,17 @@ import org.json4s.native.{Serialization => Json}
 import java.util.UUID
 
 
+object AthenaRouter {
+  case class Entry(name: String, text: String, tags: List[String])
+}
+
+
 trait AthenaRouter
   extends SimpleRoutingApp
   with Json4sSupport
-{
-  this: AthenaDatabaseComponent =>
+{ this: AthenaDatabaseComponent =>
+
+  import AthenaRouter._
 
   implicit val json4sFormats = Json.formats(NoTypeHints)
 
@@ -28,19 +34,13 @@ trait AthenaRouter
   val notePath = {
     path("add") {
       post {
-        entity(as[String]) { body =>
-          parameters('name, 'tags) { (name, tags) =>
-            complete {
-              val id = UUID.randomUUID
-
-              val tagsList = tags.split(',').toList map {
-                name => Tag(name, Nil)
-              }
-
-              val note = Note(id, name, body, tagsList)
-              db.saveNote(note)
-              note.toJson
-            }
+        entity(as[Entry]) { entry =>
+          complete {
+            val id = UUID.randomUUID
+            val tags = entry.tags.map( name => Tag(name, Nil) )
+            val note = Note(id, entry.name, entry.text, tags)
+            db.saveNote(note)
+            note.toJson
           }
         }
       }
