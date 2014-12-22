@@ -19,8 +19,8 @@ trait MongoAdapter extends AthenaDatabaseComponent {
       notes.insert(grater[Note].asDBObject(note))
     }
 
-    def getNote(id: String) = {
-      val filter = MongoDBObject("id" -> id)
+    def getNote(name: String) = {
+      val filter = MongoDBObject("name" -> name)
       notes.find(filter).toList.map(grater[Note].asObject(_))
     }
 
