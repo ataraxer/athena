@@ -56,9 +56,19 @@ trait AthenaRouter
     } ~
     path("find") {
       get {
-        parameters('text) { text =>
+        parameters('text.?, 'tag.?) { (text, tag) =>
           complete {
-            db.findNote(text).map( _.toJson )
+            if (text.isDefined && tag.isDefined) {
+              ("error" -> "Illegal combination of parameters.")
+            }
+
+            text map { text =>
+              db.findNote(text).map( _.toJson )
+            }
+
+            tag map { tag =>
+              db.findNoteByTag(tag).map( _.toJson )
+            }
           }
         }
       }

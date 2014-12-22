@@ -12,7 +12,7 @@ val commonSettings = Seq(
 
 val dependencies = Seq(
   libraryDependencies ++= Seq(
-    "org.mongodb" %% "casbah" % "2.6.3",
+    "org.mongodb" %% "casbah" % "2.7.4",
     "com.novus" %% "salat" % "1.9.8",
     "com.typesafe.akka" %% "akka-actor" % "2.3.3",
     "com.typesafe" % "config" % "1.2.1",

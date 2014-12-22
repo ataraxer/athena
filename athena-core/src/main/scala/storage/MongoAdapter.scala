@@ -27,6 +27,11 @@ trait MongoAdapter extends AthenaDatabaseComponent {
     def findNote(text: String) = {
       notes.find($text(text)).toList.map(grater[Note].asObject(_))
     }
+
+    def findNoteByTag(tag: String) = {
+      val filter = "tag" $all tag
+      notes.find(filter).toList.map(grater[Note].asObject(_))
+    }
   }
 }
 
