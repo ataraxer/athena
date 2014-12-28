@@ -8,7 +8,8 @@ val commonSettings = Seq(
     "-unchecked",
     "-feature",
     "-Xlint",
-    "-Xfatal-warnings"))
+    "-Xfatal-warnings")) ++
+  Revolver.settings
 
 val dependencies = Seq(
   libraryDependencies ++= Seq(
@@ -23,4 +24,5 @@ val dependencies = Seq(
 lazy val athenaCore = project.in(file("athena-core"))
   .settings(commonSettings: _*)
   .settings(dependencies: _*)
+
 
