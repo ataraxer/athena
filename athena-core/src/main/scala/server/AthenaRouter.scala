@@ -3,6 +3,7 @@ package server
 
 import storage._
 import data._
+import controller._
 
 import akka.actor.ActorSystem
 
@@ -11,7 +12,6 @@ import spray.httpx.Json4sSupport
 
 import org.json4s.NoTypeHints
 import org.json4s.native.{Serialization => Json}
-
 
 import java.util.UUID
 
@@ -24,7 +24,7 @@ object AthenaRouter {
 trait AthenaRouter
   extends SimpleRoutingApp
   with Json4sSupport
-{ this: AthenaDatabaseComponent =>
+{ this: AthenaDatabaseComponent with AthenaControllerComponent =>
 
   import AthenaRouter._
 
@@ -36,10 +36,13 @@ trait AthenaRouter
       post {
         entity(as[Entry]) { entry =>
           complete {
-            val id = UUID.randomUUID
             val tags = entry.tags.map( name => Tag(name, Nil) )
-            val note = Note(id, entry.name, entry.text, tags)
-            db.saveNote(note)
+
+            val note = controller.createNote(
+              entry.name,
+              entry.text,
+              tags)
+
             note.toJson
           }
         }

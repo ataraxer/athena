@@ -32,6 +32,11 @@ trait MongoAdapter extends AthenaDatabaseComponent {
       val filter = "tags" $elemMatch MongoDBObject("name" -> tag)
       notes.find(filter).toList.map(grater[Note].asObject(_))
     }
+
+    def findNoteByText(text: String) = {
+      val filter = MongoDBObject("body" -> text)
+      notes.find(filter).toList.map(grater[Note].asObject(_))
+    }
   }
 }
 
